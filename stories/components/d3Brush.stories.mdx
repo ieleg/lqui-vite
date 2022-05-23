@@ -1,0 +1,52 @@
+import { Meta, Canvas, Story, ArgsTable } from '@storybook/addon-docs/blocks';
+
+import MyBar from '../../src/components/D3/brush.vue';
+import imgBrush from '../img/brush.png';
+
+
+<Meta title="D3/brush" component={MyBar} argTypes={{}} />
+
+export const Template = (args, { argTypes }) => ({
+  setup() {
+    return { args };
+  },
+  components: { MyBar },
+  template: `<my-bar v-bind="args" />`
+});
+
+# bar-chart
+
+<img src={imgBrush}/>
+
+这里在bar-area绘制一个条形图
+条形图的x轴需传入一个序列数组，其会一一绘制对应的rect图元
+
+
+brush-area上可绘制一个迷你的条形图，section区域可拖动、拉伸，其返回一个[start, end]对应位置的数组，根据start和end，可以去改变bar-area的x轴的值域
+
+比如说假设以bar-area为相对坐标，其宽度为400，初始x轴的定义域domain为`const xDoamin = ['2020-1','2020-2','2020-3','2020-4','2020-5','2020-6','2020-7', '2020-8', '2020-9', '2020-100']`,其值域range为`const xRange = [0, 300]`
+```js
+const xScale = d3.scaleBand()
+    .domain(xDoamin)
+    .range(xRange);
+// 因为传入的序列共10个，其宽度则为300/10 = 30 xScale('2020-7')在刻度180附近 
+// 如果改变值域为[100, 400] 其宽度为800/10 = 100 xScale('2020-7')在刻度280附近
+// 如果改变值域为[0, 800] 其宽度为800/8 = 100 xScale('2020-7')在刻度600附近 则其会超出可视范围[0, 500]
+// 如果改变值域为[0, 100] 其宽度为100/10 = 10 xScale('2020-7')在刻度60附近 
+```
+通过以上代码测试可以得出值域范围变小，展示的数据变多；值域范围变大，展示的数据变少
+通过拉长section得到的[start, end]范围会变大，但要使得bar-area的x比例尺的值域范围变窄
+
+## bar-chart(不显示刷新下)
+<Canvas>
+  <Story
+    name="默认"
+    args={{
+      n: 1,
+    }}
+  >
+    {Template.bind({})}
+  </Story>
+</Canvas>
+
+<ArgsTable story="默认" />

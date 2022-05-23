@@ -1,0 +1,38 @@
+{
+  "name": "lqui-vite",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "devDependencies": {
+    "@babel/core": "^7.18.0",
+    "@storybook/addon-actions": "^6.5.4",
+    "@storybook/addon-docs": "^6.5.4",
+    "@storybook/addon-essentials": "^6.5.4",
+    "@storybook/addon-interactions": "^6.5.4",
+    "@storybook/addon-links": "^6.5.4",
+    "@storybook/addon-storysource": "^6.5.4",
+    "@storybook/addon-toolbars": "^6.5.4",
+    "@storybook/builder-vite": "^0.1.35",
+    "@storybook/preset-scss": "^1.0.3",
+    "@storybook/storybook-deployer": "^2.8.11",
+    "@storybook/testing-library": "^0.0.11",
+    "@storybook/theming": "^6.5.4",
+    "@storybook/vue3": "^6.5.4",
+    "@vitejs/plugin-vue": "^2.3.3",
+    "babel-loader": "^8.2.5",
+    "sass": "^1.52.1",
+    "vite": "^2.9.9",
+    "vue-loader": "^16.8.3"
+  },
+  "dependencies": {
+    "d3": "^7.3.0",
+    "d3-cloud": "^1.2.5",
+    "element-plus": "2.0.2",
+    "vue": "^3.2.33"
+  },
+  "scripts": {
+    "storybook": "start-storybook -p 6006",
+    "deploy-storybook": "storybook-to-ghpages",
+    "build-storybook": "build-storybook"
+  }
+}

@@ -1,0 +1,91 @@
+import { Meta, Canvas, Story, ArgsTable } from "@storybook/addon-docs/blocks";
+
+import GroupedBar from "../../src/components/em/grouped-bar.vue";
+
+<Meta title="em/grouped-bar" component={GroupedBar} argTypes={{}} />
+
+export const Template = (args, { argTypes }) => ({
+  setup() {
+    return { args };
+  },
+  components: { GroupedBar },
+  template: `<grouped-bar v-bind="args" />`,
+});
+
+# area-chart
+
+## area-chart(不显示刷新下)
+
+<Canvas>
+  <Story
+    name="default"
+    args={{
+      data: [
+        {
+          date: "2022-05-11",
+          salesAmount: 4000,
+          salesRate: 4,
+          salesTarget: 8000,
+          totalSalesAmount: 0,
+          totalSalesOldAmount: 0,
+          totalSalesOldTarget: 531600,
+          totalSalesTarget: 6000000,
+        },
+        {
+          date: "2022-05-12",
+          salesAmount: 10000,
+          salesRate: 10,
+          salesTarget: 10000,
+          totalSalesAmount: 0,
+          totalSalesOldAmount: 0,
+          totalSalesOldTarget: 531600,
+          totalSalesTarget: 6000000,
+        },
+        {
+          date: "2022-05-13",
+          salesAmount: 0,
+          salesRate: 0,
+          salesTarget: 6000,
+          totalSalesAmount: 0,
+          totalSalesOldAmount: 0,
+          totalSalesOldTarget: 531600,
+          totalSalesTarget: 6000000,
+        },
+        {
+          date: "2022-05-14",
+          salesAmount: 35000,
+          salesRate: 5.83,
+          salesTarget: 60000,
+          totalSalesAmount: 350000,
+          totalSalesOldAmount: 350000,
+          totalSalesOldTarget: 1063200,
+          totalSalesTarget: 12000000,
+        },
+        {
+          date: "2022-05-16",
+          salesAmount: 62000.5,
+          salesRate: 10.33,
+          salesTarget: 60000,
+          totalSalesAmount: 970000.5,
+          totalSalesOldAmount: 710000.5,
+          totalSalesOldTarget: 1594800,
+          totalSalesTarget: 18000000,
+        },
+        {
+          date: "2022-05-17",
+          salesAmount: 0,
+          salesRate: 0,
+          salesTarget: 60000,
+          totalSalesAmount: 970000.5,
+          totalSalesOldAmount: 710000.5,
+          totalSalesOldTarget: 2126400,
+          totalSalesTarget: 24000000,
+        },
+      ],
+    }}
+  >
+    {Template.bind({})}
+  </Story>
+</Canvas>
+
+<ArgsTable story="default" />

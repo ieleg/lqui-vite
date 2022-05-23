@@ -1,0 +1,26 @@
+import { Meta, Canvas, Story, ArgsTable } from '@storybook/addon-docs/blocks';
+
+import MyArea from '../../src/components/D3/area.vue';
+
+<Meta title="D3/area" component={MyArea} />
+
+export const Template = (args) => ({
+  components: { MyArea },
+  setup() {
+    return { args };
+  },
+  template: `<my-area v-bind="args" />`
+});
+
+# area-chart
+一个区域图由两条边界 lines 定义，可以是曲线或折线。通常情况下两条边界线共享一个 x-values (x0 = x1)，仅仅是 y-value (y0 和 y1) 不一样。大多数情况下，y0 会被定义为一个常量 zero (opens new window). 第一条线 (也就是 上侧线) 由 x1 和 y1 定义渲染。而第二条线 (也就是 基线) 由 x0 和 y0 定义渲染。有了 curveLinear curve，就可以生成一个顺时针方向的多边形。
+## area-chart(不显示刷新下)
+
+<Canvas>
+  <Story
+    name="default"
+  >
+    {Template.bind({})}
+  </Story>
+</Canvas>
+
