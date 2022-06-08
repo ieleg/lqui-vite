@@ -20,9 +20,7 @@ module.exports = {
       // Your production configuration goes here.
     }
     return mergeConfig(config, {
-      define: {
-        global: "window",
-      },
+
       // Your environment configuration here
     });
   },

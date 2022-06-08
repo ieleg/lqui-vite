@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "license": "MIT",
+  "homepage" : "https://ieleg.github.io/lqui-vite",
   "devDependencies": {
     "@babel/core": "^7.18.0",
     "@storybook/addon-actions": "^6.5.4",
