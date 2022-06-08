@@ -20,7 +20,7 @@ module.exports = {
       // Your production configuration goes here.
     }
     return mergeConfig(config, {
-
+      base: './'
       // Your environment configuration here
     });
   },
