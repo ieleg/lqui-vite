@@ -9,12 +9,14 @@ export const Template = (args, { argTypes }) => ({
     return { args };
   },
   components: { GroupedBar },
-  template: `<grouped-bar v-bind="args" />`,
+  template: `<div style="width: 800px;"> <grouped-bar v-bind="args" /></div>`,
 });
 
-# area-chart
+# grouped-bar
 
-## area-chart(不显示刷新下)
+第一个固定的svg用来绘制x、y轴，第二个svg使其绝对定位覆盖在第一层之上，在其中叠加对应的rect、circle、path图元
+
+## grouped-bar(不显示刷新下)
 
 <Canvas>
   <Story
@@ -82,6 +84,26 @@ export const Template = (args, { argTypes }) => ({
           totalSalesTarget: 24000000,
         },
       ],
+    }}
+  >
+    {Template.bind({})}
+  </Story>
+</Canvas>
+
+<Canvas>
+  <Story
+    name="scroll"
+    args={{
+      data: Array.from({ length: 20 }, (_, k) => ({
+        date: "2022-05-0" + k,
+        salesAmount: (Math.random()*k * 10e3) + 500,
+        salesRate: (Math.random()*k) + 1,
+        salesTarget: (Math.random()*k * 10e3) + 500,
+        totalSalesAmount: 0,
+        totalSalesOldAmount: 0,
+        totalSalesOldTarget: 531600,
+        totalSalesTarget: 6000000,
+      })),
     }}
   >
     {Template.bind({})}

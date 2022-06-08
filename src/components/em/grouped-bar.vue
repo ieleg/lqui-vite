@@ -324,7 +324,7 @@ watchEffect(() => {
 .scroll-bar {
   margin-top: -248px;
   z-index: 12;
-  transform: translateX(37px);
+  transform: translateX(60px);
   margin-right: 54px;
 }
 .scroll-svg {
