@@ -1,3 +1,5 @@
+import { json } from "stream/consumers"
+
 export type Expect<T extends true> = T
 export type ExpectTrue<T extends true> = T
 export type ExpectFalse<T extends false> = T
@@ -182,3 +184,125 @@ interface Todo12 {
   completed: boolean
 }
 type fdd = MyReadonly2<Todo12>
+
+// type Arr = ['1', '2', '3']
+// type Test = TupleToUnion<Arr> // expected to be '1' | '2' | '3'
+type TupleToUnion<T extends readonly any[]> = T[number]
+
+
+/*
+  12 - 可串联构造器
+  -------
+  by Anthony Fu (@antfu) #中等 #application
+  
+  ### 题目
+  
+  在 JavaScript 中我们很常会使用可串联（Chainable/Pipeline）的函数构造一个对象，但在 TypeScript 中，你能合理的给他附上类型吗？
+  
+  在这个挑战中，你可以使用任意你喜欢的方式实现这个类型 - Interface, Type 或 Class 都行。你需要提供两个函数 `option(key, value)` 和 `get()`。在 `option` 中你需要使用提供的 key 和 value 扩展当前的对象类型，通过 `get` 获取最终结果。
+  
+  例如
+  
+  ```ts
+  declare const config: Chainable
+  
+  const result = config
+    .option('foo', 123)
+    .option('name', 'type-challenges')
+    .option('bar', { value: 'Hello World' })
+    .get()
+  
+  // 期望 result 的类型是：
+  interface Result {
+    foo: number
+    name: string
+    bar: {
+      value: string
+    }
+  }
+  ```
+  
+  你只需要在类型层面实现这个功能 - 不需要实现任何 TS/JS 的实际逻辑。
+  
+  你可以假设 `key` 只接受字符串而 `value` 接受任何类型，你只需要暴露它传递的类型而不需要进行任何处理。同样的 `key` 只会被使用一次。
+  
+  > 在 Github 上查看：https://tsch.js.org/12/zh-CN
+*/
+type Chainable<T extends object = {}> = {
+  option<K extends number | string, S>(key: K, value: S): Chainable<T & {[k in K]: S}>
+  get(): T
+}
+
+
+// type arr1 = ['a', 'b', 'c']
+// type arr2 = [3, 2, 1]
+
+// type tail1 = Last<arr1> // expected to be 'c'
+// type tail2 = Last<arr2> // expected to be 1
+type Last<T extends any[]> = T extends [...infer r, infer L] ? L : never
+
+[1,2,3, '123'].pop()
+
+
+// type arr1 = ['a', 'b', 'c', 'd']
+// type arr2 = [3, 2, 1]
+
+// type re1 = Pop<arr1> // expected to be ['a', 'b', 'c']
+// type re2 = Pop<arr2> // expected to be [3, 2]
+type Pop<T extends any[]> = T extends [...infer R, infer L] ? R : never
+
+
+declare function PromiseAll<T extends any[]>(values: [...T]): Promise<{[P in keyof T]: T[P] extends Promise<infer R> ? R : T[P]}>
+let d = PromiseAll([1,2,3])
+
+
+// interface Cat {
+//   type: 'cat'
+//   breeds: 'Abyssinian' | 'Shorthair' | 'Curl' | 'Bengal'
+// }
+
+// interface Dog {
+//   type: 'dog'
+//   breeds: 'Hound' | 'Brittany' | 'Bulldog' | 'Boxer'
+//   color: 'brown' | 'white' | 'black'
+// }
+
+// type MyDog = LookUp<Cat | Dog, 'dog'> // expected to be `Dog`
+type LookUp<U , T> = U extends {type: T} ? U : never
+
+type sss = '  dasd  '
+type trim<T> = T extends `${' '|'\n'|'\t'}${infer R}` | `${infer R}${' '|'\n'|'\t'}` ? trim<R> : T
+type asd = trim<sss>
+
+
+type MyCapitalize<S extends string> = S extends `${infer R}${infer T}` ? `${Uppercase<R>}${T}` : S
+type _dad = MyCapitalize<'dasd'>
+
+
+const daxx = 'asd'.replace('s', 'ddx')
+
+
+type AppendArgument<Fn, A> = Fn extends (...arg: infer R) => infer T ? (...arg:[...R, A]) => T : never
+
+
+
+// 全排列
+type _sad = '123' | 'asd'
+type Permutation<T, K=T> = [T] extends [never]
+  ? []
+  : K extends T
+    ? [K, ...Permutation<Exclude<T, K>>]
+    : never
+    
+type _dsd = Exclude<_sad, '123' | 'asd'>
+type _dsd1 = Permutation<_sad>
+
+let dadsxx = [...[]]
+
+
+// type Test = { id: '1' }
+// type Result = AppendToObject<Test, 'value', 4> // expected to be { id: '1', value: 4 }
+type AppendToObject<T extends {}, U extends string, V> = {[key in (keyof T) | U]: key extends keyof T ? T[key] : V }
+
+
+JSON
