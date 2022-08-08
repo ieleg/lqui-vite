@@ -7,6 +7,7 @@ module.exports = {
     "@storybook/addon-storysource",
     "@storybook/preset-scss",
     "@storybook/addon-toolbars",
+    '@storybook/addon-postcss'
   ],
   framework: "@storybook/vue3",
   core: {

@@ -1,0 +1,71 @@
+import { Meta, Canvas, Story, ArgsTable } from "@storybook/addon-docs/blocks";
+
+import SelectV from "../../src/components/select-search-virtual/index.vue";
+import { ref } from 'vue'
+
+<Meta title="em/tt" component={SelectV} argTypes={{}} />
+
+export const Template = (args, { argTypes }) => ({
+  setup() {
+    const list = ref([])
+    return { args, list };
+  },
+  components: { SelectV },
+  template: `<div style="width: 300px"><select-v v-bind="args" v-model="list"  /></div>`,
+});
+
+export const Template2 = (args, { argTypes }) => ({
+  setup() {
+    const list = ref([])
+    return { args, list };
+  },
+  components: { SelectV },
+  template: 
+    `
+    <div style="width: 300px"><select-v v-bind="args" v-model="list">
+      <template v-if="${'default' in args}" #default="{item}"><p>{{item.label}}</p> id:{{item.id}} code:{{item.code}}</template>
+    </select-v>
+  </div>`,
+});
+
+# select-v
+传递`value-key`时，绑定的是一个`sring[]`或者`number[]`, 不传`value-key`时，绑定的是一个`object[]`,此时必须设置`unique-key`以区分唯一键名
+因为该组件主要处理大数据量的情况，默认单个item是一个对象，如果非要处理[1,2,3,4...]这样的数据要在传入的时候转一下结构
+
+<Canvas>
+  <Story
+    name="default"
+    args={{
+      valueKey: 'id',
+      labelKey: 'label',
+      options: [...Array.from({ length: 2000 }, (_, k) => ({
+        id: k,
+        label: k + '我是一个虚拟条木' + k
+      }))]
+    }}
+  >
+    {Template.bind({})}
+  </Story>
+</Canvas>
+
+绑定对象
+
+<Canvas>
+  <Story
+    name="default3"
+    args={{
+      default: (item) => `${item.label}`,
+      labelKey: 'label',
+      options: [...Array.from({ length: 2000 }, (_, k) => ({
+        id: k,
+        label: k + '标签' + k,
+        code: '编码' + k*2,
+        tip: 'id提示'+k
+      }))]
+    }}
+  >
+    {Template2.bind({})}
+  </Story>
+</Canvas>
+
+<ArgsTable story="default" />
