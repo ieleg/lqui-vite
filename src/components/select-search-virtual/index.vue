@@ -104,8 +104,8 @@
               class="duration-300"
               :d="
                 clearIconShow
-                  ? 'M6 18 L18 6 M6 6 L18 18'
-                  : 'M6 8 L12 15 M12 15 L18 8'
+                  ? 'M6 6 L18 18 M6 18 L18 6'
+                  : 'M6 8 L12 15 M18 8 L12 15'
               "
             ></path>
           </svg>

@@ -121,13 +121,39 @@ img {
   font-size: 0.9em;
   color: #999;
 }
+ .a {
+    width: 200px;
+    aspect-ratio: 1;
+    background: #FFF1C1;
+    border-radius: 50%;
+    position: relative;
+    overflow: hidden;
+  }
+  .b {
+    width: 200px;
+    aspect-ratio: 1;
+    position: absolute;
+    background: #FE5F55;
+    transform: rotate(45deg) transLate(50%,21%);
+  }
+  .b::after{
+	  content: '';
+    width: 30px;
+    height: 50px;
+    position: absolute;
+    left: -29px;
+    top:128px;
+    background: #FE5F55;
+  }
 `}</style>
 
 <div id="content">
   <h1>wl's playground</h1>
   <div class="post">
     <div class="details">
-      <img src={Logo}/>
+      <div class="a">
+        <div class="b"></div>
+      </div>
       <p class="info">开发指南 <a target="_blank" href="https://storybook.js.org/tutorials/design-systems-for-developers/react/en/introduction/">storybook设计系统</a></p>
     </div>
     <div class="body">
