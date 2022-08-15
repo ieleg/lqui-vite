@@ -41,24 +41,35 @@ export const useChess = () => {
     chess.value[index] = "us"
   }
 
+  const hardMode = () => {
+    const indexs = chess.value
+      .map((d, index) => (d === "ai" ? index : -1))
+      .filter(d => ~d)
+    const canWinStr = windIndex.filter(str => !indexs.some(index => ~str.indexOf(String(index))))
+    console.log(canWinStr);
+  }
+
   const aiTurn = () => {
     const restIndexArr = chess.value
       .map((d, index) => (d ? -1 : index))
       .filter(d => ~d)
     const index = restIndexArr.sort(() => Math.random() - 0.5).slice(0, 1)[0]
     chess.value[index] = "ai"
+    hardMode()
+
   }
 
   const checkWinner = () => {
     windIndex.some(str => {
       const [index1, index2, index3] = str.split(",")
-      const equal = chess.value[index1] &&
+      const equal =
+        chess.value[index1] &&
         chess.value[index1] === chess.value[index2] &&
         chess.value[index1] === chess.value[index3]
       if (equal) {
         winner.value = chess.value[index1]
-        console.log(chess.value);
-        
+        console.log(chess.value)
+
         indexLine.value = [+index1, +index2, +index3]
       }
       return equal

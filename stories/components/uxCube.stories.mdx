@@ -1,0 +1,45 @@
+import { Meta, Canvas, Story, ArgsTable } from "@storybook/addon-docs/blocks";
+
+import SelectV from "../../src/components/ux/cube.vue";
+import { ref } from 'vue'
+
+<Meta title="css/cube" component={SelectV} argTypes={{}} />
+
+export const Template = (args, { argTypes }) => ({
+  setup() {
+    const list = ref([])
+    return { args, list };
+  },
+  components: { SelectV },
+  template: `<select-v v-bind="args" v-model="list"  />`,
+});
+
+When we set the property to preserve-3d, it does two important things:
+
+1、It tells the sides of the cube (the child elements) to be positioned in the same 3D space as the cube. 
+If it is not set to preserve-3d, the default value is set to flat , 
+and the sides are flattened in the cube’s plane. preserve-3d “copies” the cube perspective to its children (the sides) and allows us to rotate just the cube, 
+so we don’t need to animate each side separately.
+
+
+2、It displays the child elements according to their position in the 3D space, regardless of their place in the DOM.
+
+The `perspective-origin`(
+Default value:	50% 50% = center center) property defines at from which position the user is looking at the 3D-positioned element.
+
+When defining the perspective-origin property for an element, it is the CHILD elements that will get the effect, NOT the element itself.
+# grid-responsive2
+
+<Canvas>
+  <Story
+    name="default"
+    args={{
+      valueKey: 'id',
+      labelKey: 'label',
+    }}
+  >
+    {Template.bind({})}
+  </Story>
+</Canvas>
+
+<ArgsTable story="default" />

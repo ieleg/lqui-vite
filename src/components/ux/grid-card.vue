@@ -25,7 +25,7 @@
   </div>
 </template>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .wrapper {
   display: grid;
   gap: 1rem;

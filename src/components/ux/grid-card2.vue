@@ -40,7 +40,7 @@ import { ref } from "vue-demi"
 
 const mouseOut = ref(false)
 </script>
-<style lang="scss">
+<style lang="scss" scoped>
 .wrapper {
   display: grid;
   grid-template-rows: 30px 100px 30px;
