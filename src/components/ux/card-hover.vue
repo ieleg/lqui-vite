@@ -1,13 +1,9 @@
 <template>
-  <div class="container">
+  <div class="container" @mousemove.stop="handleMove" @mouseleave="handleLeave">
     <div
       class="card shadow-md flex items-center justify-center m-0 p-0"
       ref="cardRef"
-      @mousemove.stop="handleMove"
-      @mouseleave="handleLeave"
-    >
-      <img src="./cat.jpg" class="min-w-full" alt="" />
-    </div>
+    ></div>
   </div>
 </template>
 
@@ -38,7 +34,7 @@ const x = ref("0")
 const y = ref("0")
 const cardRef = ref<HTMLElement>()
 const handleMove = (e: MouseEvent) => {
-  const { pageX, pageY  } = e
+  const { pageX, pageY } = e
   const { left, top } = cardRef.value!.getBoundingClientRect()
   x.value = (pageY - top) / -10 + 20 + "deg"
   y.value = (pageX - left) / 15 - 10 + "deg"
@@ -60,13 +56,17 @@ const handleLeave = () => {
   transition: all 0.1s;
   width: 300px;
   height: 400px;
-  background: conic-gradient(
-    red 90deg,
-    yellow 90deg 180deg,
-    green 180deg 270deg,
-    #000 270deg 360deg
-  );
-  background-size: 50px 50px;
+
+  background:
+//   url('./cat.jpg') center no-repeat,
+    repeating-conic-gradient(
+        #b0a8b9e5 90deg,
+        #edebf083 0 180deg,
+        #b0a8b969 0 270deg,
+        #b0a8b996 0
+      )
+      center / 50px 50px repeat,
+    radial-gradient(#d5cabd 10px, #fefedf 0) center / 25px 25px repeat;
   &:hover {
     transform: rotateX(v-bind(x)) rotateY(v-bind(y));
     // transform: rotateX(20deg) rotateY(10deg);
