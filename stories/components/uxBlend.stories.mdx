@@ -1,0 +1,93 @@
+import { Meta, Canvas, Story, ArgsTable } from "@storybook/addon-docs/blocks";
+
+import Card from "../../src/components/ux/blend.vue";
+import Conic1 from '../img/conic-angle.svg'
+import ConicBase from '../img/conic-base.svg'
+import ConicRotate from '../img/conic-rotate.svg'
+
+import { ref } from 'vue'
+
+<Meta title="css/blend" component={Card} argTypes={{}} />
+
+export const Template = (args, { argTypes }) => ({
+  setup() {
+    return { args };
+  },
+  components: { Card },
+  template: `<Card v-bind="args" />`,
+});
+
+# base
+blend意味着组合两层（堆叠在另一层之上）并得到一个单层。这两个层可以是两个兄弟元素，在这种情况下，使用的 CSS 属性是mix-blend-mode. 
+它们也可以是background两层，在这种情况下，使用的 CSS 属性是background-blend-mode. 
+当谈论混合“兄弟”时，这包括将元素与伪元素或文本内容或background其父元素混合。当谈到background层时，不仅仅是background-image在谈论的层——它background-color也是一个层。
+
+When blending two layers, the layer on top is called the source, while the layer underneath is called the destination
+
+如果有两个以上的层， 混合过程从底部开始分阶段进行。
+
+
+mode为difference下
+黑色顶部 与 黑色底部 作difference 输出黑色
+
+白色顶部 与 白色底部 作difference 输出黑色 
+
+黑色顶部 与 白色底部 作difference 输出黑色 
+
+黑色顶部 与 蓝色底部 作difference 输出蓝色 
+
+白色顶部 与 蓝色底部 作difference 输出黄色 
+
+蓝色色顶部 与 黑色底部 作difference 输出蓝色
+
+蓝色色顶部 与 白色底部 作difference 输出黄色
+... 
+白色反转相对层的颜色。黑色不产生变化。
+假设#000 的值为0 #fff的值为1, 其他颜色在0到1之间
+|color[top] - color[bottom]| = color[output]
+
+mode为exclusion下在黑白色与其他颜色的效果同difference
+但是在异色之间它的计算略微不同
+
+<Canvas>
+  <Story
+    name="default"
+    args={{
+      type: 'base',
+    }}
+  >
+    {Template.bind({})}
+  </Story>
+</Canvas>
+
+# rotate
+
+<img src={ConicRotate}/>
+
+<Canvas>
+  <Story
+    name="rotate"
+    args={{
+      type: 'rotate',
+    }}
+  >
+    {Template.bind({})}
+  </Story>
+</Canvas>
+
+# angle-custom
+
+<img src={Conic1}/>
+
+<Canvas>
+  <Story
+    name="angle"
+    args={{
+      type: 'angle',
+    }}
+  >
+    {Template.bind({})}
+  </Story>
+</Canvas>
+
+<ArgsTable story="default" />

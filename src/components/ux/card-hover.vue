@@ -57,9 +57,7 @@ const handleLeave = () => {
   width: 300px;
   height: 400px;
 
-  background:
-//   url('./cat.jpg') center no-repeat,
-    repeating-conic-gradient(
+  background: repeating-conic-gradient(
         #b0a8b9e5 90deg,
         #edebf083 0 180deg,
         #b0a8b969 0 270deg,
@@ -69,7 +67,6 @@ const handleLeave = () => {
     radial-gradient(#d5cabd 10px, #fefedf 0) center / 25px 25px repeat;
   &:hover {
     transform: rotateX(v-bind(x)) rotateY(v-bind(y));
-    // transform: rotateX(20deg) rotateY(10deg);
   }
 }
 </style>
