@@ -1,6 +1,7 @@
 <template>
   <div class="container flex items-center justify-center">
-    <div class="card"></div>
+    <div class="card" />
+    <div class="card" />
   </div>
 </template>
 
@@ -9,62 +10,55 @@
   width: 300px;
   aspect-ratio: 1;
   background: #000;
+  // filter: contrast(.95);
+  overflow: hidden;
 }
 $t: 3s;
 .card {
-  width: 100px;
-  aspect-ratio: 1;
-  background: #fff;
+  --isSecond: var(--2nflag, 0);
+  --isFirst: calc(1 - var(--isSecond));
+  padding: 50px;
   position: absolute;
   mix-blend-mode: difference;
-  background-blend-mode: difference;
-  animation: rotate $t infinite linear;
-  &::after,
-  &::before {
-    position: absolute;
-    content: "";
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(45deg, #fff 50%, transparent 0);
-    mix-blend-mode: difference;
+  transform: rotate(calc(var(--isSecond) * 90deg + 45deg)) scale(0.71);
+  animation: innerRotate $t infinite cubic-bezier(0.09, 0.65, 0.91, 0.34);
+  box-sizing: border-box;
+    border-radius: 50%;
+
+  &:nth-child(2n) {
+    --2nflag: 1;
   }
-  &::before {
-    right: -50px;
-    top: -50px;
-    background: linear-gradient(225deg, #fff 50%, transparent 0);
-    animation: rotate3 $t infinite linear;
-    @keyframes rotate3 {
-      0%,
-      100% {
-      }
-      50% {
-        right: 0;
-        top: 0;
-      }
-    }
+  &::before,
+  &::after {
+    --afterFlag: 0;
+    --x: calc((2 * var(--afterFlag) - 1) * 50%); //before: -50% after 50%
+    background: #fff;
+    inset: 0;
+    position: absolute;
+    border-radius: 50%;
+    clip-path: polygon(50% 0, 50% 100%, calc(var(--afterFlag) * 100%) 50%);
+    content: "";
+    transform: rotate(calc(var(--isSecond) * 45deg))
+      scale(calc(var(--isFirst) + var(--isSecond) * 1.41))
+      translate(calc(var(--isFirst) * var(--x)));
+
+    animation: outRotate $t infinite cubic-bezier(0.41, 0.52, 0.68, 0.48);
+    animation-direction: var(--2nflag, reverse);
   }
   &::after {
-    left: -50px;
-    bottom: -50px;
-    animation: rotate2 $t infinite linear;
-    @keyframes rotate2 {
-      0%,
-      100% {
-      }
-      50% {
-        left: 0;
-        bottom: 0;
-      }
-    }
+    --afterFlag: 1;
+    clip-path: polygon(49% 0, 49% 100%, calc(var(--afterFlag) * 100%) 50%);
   }
-  @keyframes rotate {
-    0%,
-    100% {
-      transform: rotate(-45deg);
-    }
-    50% {
-      transform: rotate(45deg);
-    }
+}
+@keyframes innerRotate {
+  0% {
+    transform: rotate(calc(var(--isSecond) * 90deg));
+  }
+}
+@keyframes outRotate {
+  50%,
+  100% {
+    transform: translate(calc(var(--isSecond) * var(--x)));
   }
 }
 </style>

@@ -20,7 +20,7 @@
   &:hover {
     .bottom {
       transform: translateY(-200px) rotateX(0deg);
-      mix-blend-mode: exclusion;
+      mix-blend-mode: difference;
     }
     .top {
       transform: rotateX(0deg);
