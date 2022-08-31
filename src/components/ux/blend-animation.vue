@@ -9,7 +9,7 @@
 .container {
   width: 300px;
   aspect-ratio: 1;
-  background: #000;
+  background: #fff;
   // filter: contrast(.95);
   overflow: hidden;
 }
@@ -23,7 +23,7 @@ $t: 3s;
   transform: rotate(calc(var(--isSecond) * 90deg + 45deg)) scale(0.71);
   animation: innerRotate $t infinite cubic-bezier(0.09, 0.65, 0.91, 0.34);
   box-sizing: border-box;
-    border-radius: 50%;
+  border-radius: 50%;
 
   &:nth-child(2n) {
     --2nflag: 1;
@@ -32,7 +32,7 @@ $t: 3s;
   &::after {
     --afterFlag: 0;
     --x: calc((2 * var(--afterFlag) - 1) * 50%); //before: -50% after 50%
-    background: #fff;
+    background: rgb(64, 105, 158);
     inset: 0;
     position: absolute;
     border-radius: 50%;
