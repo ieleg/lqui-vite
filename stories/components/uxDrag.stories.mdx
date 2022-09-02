@@ -1,0 +1,31 @@
+import { Meta, Canvas, Story, ArgsTable } from "@storybook/addon-docs/blocks";
+
+import Card from "../../src/components/ux/item-drag2.vue";
+import { ref } from 'vue'
+
+<Meta title="css/drag" component={Card} argTypes={{}} />
+
+export const Template = (args, { argTypes }) => ({
+  setup() {
+    const list = ref([])
+    return { args, list };
+  },
+  components: { Card },
+  template: `<Card v-bind="args" v-model="list"  />`,
+});
+
+# masonry
+
+<Canvas>
+  <Story
+    name="default"
+    args={{
+      valueKey: 'id',
+      labelKey: 'label',
+    }}
+  >
+    {Template.bind({})}
+  </Story>
+</Canvas>
+
+<ArgsTable story="default" />
