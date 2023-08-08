@@ -1,0 +1,42 @@
+import { Meta, Canvas, Story, ArgsTable } from "@storybook/addon-docs/blocks";
+
+import RectV from "../../src/components/fabric/rect.vue";
+
+<Meta title="fabric/cursor" component={RectV} argTypes={{}} />
+
+export const Template = (args, { argTypes }) => ({
+  setup() {
+    return { args };
+  },
+  components: { RectV },
+  template: `<rect-v v-bind="args" />`,
+});
+
+# cursor
+
+## 控件
+- [x] 鼠标手势跟随旋转角度变化
+- [x] 移动时隐藏控件
+- [x] 旋转时隐藏控件
+- [ ] hover到元素出现一种准选中的效果
+- [x] 自动辅助线
+- [ ] 确定元素层级
+- [x] 元素拖动时展示辅助线提示对齐位置，拖到靠近居中处智能居中 靠近边缘对齐时自动对齐
+- [x] 图像或其他素材(png/jpg/svg..)拖放画布中
+- [ ] gif格式在画布中展示多帧动画-目前只有第一帧
+- [ ] 文字编辑
+- [ ] 字体特效
+
+<Canvas>
+  <Story
+    name="default"
+    args={{
+      valueKey: 'id',
+      labelKey: 'label',
+    }}
+  >
+    {Template.bind({})}
+  </Story>
+</Canvas>
+
+<ArgsTable story="default" />
