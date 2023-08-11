@@ -514,6 +514,9 @@ export const useEditorStore = defineStore("editor", () => {
       const {height, width} = data
       canvas.setHeight(data.height)
       canvas.setWidth(data.width)
+      if(data.width > 1000) {
+        canvas.setZoom(1000 / data.width)
+      }
       canvas.renderAll()
     })
   }
