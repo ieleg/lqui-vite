@@ -1,89 +1,117 @@
-import type { fabric } from "fabric"
+import { fabric } from "fabric"
 import { defineStore } from "pinia"
 import { markRaw, ref } from "vue"
 import { useControlStore } from "./controls"
-import { IMG_SCALE_WIDTH } from "../config";
+import { IMG_SCALE_WIDTH } from "../config"
+import { useLocalStorage } from "@vueuse/core"
+import { str } from "../mock"
 function initCenteringGuidelines(canvas) {
-
   var canvasWidth = canvas.getWidth(),
-      canvasHeight = canvas.getHeight(),
-      canvasWidthCenter = canvasWidth / 2,
-      canvasHeightCenter = canvasHeight / 2,
-      canvasWidthCenterMap = { },
-      canvasHeightCenterMap = { },
-      centerLineMargin = 4,
-      centerLineColor = 'rgba(255,0,241,0.5)',
-      centerLineWidth = 1,
-      ctx = canvas.getSelectionContext(),
-      viewportTransform;
+    canvasHeight = canvas.getHeight(),
+    canvasWidthCenter = canvasWidth / 2,
+    canvasHeightCenter = canvasHeight / 2,
+    canvasWidthCenterMap = {},
+    canvasHeightCenterMap = {},
+    centerLineMargin = 4,
+    centerLineColor = "rgba(255,0,241,0.5)",
+    centerLineWidth = 1,
+    ctx = canvas.getSelectionContext(),
+    viewportTransform
 
-  for (var i = canvasWidthCenter - centerLineMargin, len = canvasWidthCenter + centerLineMargin; i <= len; i++) {
-    canvasWidthCenterMap[Math.round(i)] = true;
+  for (
+    var i = canvasWidthCenter - centerLineMargin,
+      len = canvasWidthCenter + centerLineMargin;
+    i <= len;
+    i++
+  ) {
+    canvasWidthCenterMap[Math.round(i)] = true
   }
-  for (var i = canvasHeightCenter - centerLineMargin, len = canvasHeightCenter + centerLineMargin; i <= len; i++) {
-    canvasHeightCenterMap[Math.round(i)] = true;
+  for (
+    var i = canvasHeightCenter - centerLineMargin,
+      len = canvasHeightCenter + centerLineMargin;
+    i <= len;
+    i++
+  ) {
+    canvasHeightCenterMap[Math.round(i)] = true
   }
 
   function showVerticalCenterLine() {
-    showCenterLine(canvasWidthCenter + 0.5, 0, canvasWidthCenter + 0.5, canvasHeight);
+    showCenterLine(
+      canvasWidthCenter + 0.5,
+      0,
+      canvasWidthCenter + 0.5,
+      canvasHeight
+    )
   }
 
   function showHorizontalCenterLine() {
-    showCenterLine(0, canvasHeightCenter + 0.5, canvasWidth, canvasHeightCenter + 0.5);
+    showCenterLine(
+      0,
+      canvasHeightCenter + 0.5,
+      canvasWidth,
+      canvasHeightCenter + 0.5
+    )
   }
 
   function showCenterLine(x1, y1, x2, y2) {
-    ctx.save();
-    ctx.strokeStyle = centerLineColor;
-    ctx.lineWidth = centerLineWidth;
-    ctx.beginPath();
-    ctx.moveTo(x1 * viewportTransform[0], y1 * viewportTransform[3]);
-    ctx.lineTo(x2 * viewportTransform[0], y2 * viewportTransform[3]);
-    ctx.stroke();
-    ctx.restore();
+    ctx.save()
+    ctx.strokeStyle = centerLineColor
+    ctx.lineWidth = centerLineWidth
+    ctx.beginPath()
+    ctx.moveTo(x1 * viewportTransform[0], y1 * viewportTransform[3])
+    ctx.lineTo(x2 * viewportTransform[0], y2 * viewportTransform[3])
+    ctx.stroke()
+    ctx.restore()
   }
 
   var afterRenderActions = [],
-      isInVerticalCenter,
-      isInHorizontalCenter;
+    isInVerticalCenter,
+    isInHorizontalCenter
 
-  canvas.on('mouse:down', function () {
-    viewportTransform = canvas.viewportTransform;
-  });
+  canvas.on("mouse:down", function () {
+    viewportTransform = canvas.viewportTransform
+  })
 
-  canvas.on('object:moving', function(e) {
+  canvas.on("object:moving", function (e) {
     var object = e.target,
-        objectCenter = object.getCenterPoint(),
-        transform = canvas._currentTransform;
+      objectCenter = object.getCenterPoint(),
+      transform = canvas._currentTransform
 
-    if (!transform) return;
-
-    isInVerticalCenter = Math.round(objectCenter.x) in canvasWidthCenterMap,
-    isInHorizontalCenter = Math.round(objectCenter.y) in canvasHeightCenterMap;
+    if (!transform) return
+    ;(isInVerticalCenter = Math.round(objectCenter.x) in canvasWidthCenterMap),
+      (isInHorizontalCenter =
+        Math.round(objectCenter.y) in canvasHeightCenterMap)
 
     if (isInHorizontalCenter || isInVerticalCenter) {
-      object.setPositionByOrigin(new fabric.Point((isInVerticalCenter ? canvasWidthCenter : objectCenter.x), (isInHorizontalCenter ? canvasHeightCenter : objectCenter.y)), 'center', 'center');
+      object.setPositionByOrigin(
+        new fabric.Point(
+          isInVerticalCenter ? canvasWidthCenter : objectCenter.x,
+          isInHorizontalCenter ? canvasHeightCenter : objectCenter.y
+        ),
+        "center",
+        "center"
+      )
     }
-  });
+  })
 
-  canvas.on('before:render', function() {
-    canvas.clearContext(canvas.contextTop);
-  });
+  canvas.on("before:render", function () {
+    canvas.clearContext(canvas.contextTop)
+  })
 
-  canvas.on('after:render', function() {
+  canvas.on("after:render", function () {
     if (isInVerticalCenter) {
-      showVerticalCenterLine();
+      showVerticalCenterLine()
     }
     if (isInHorizontalCenter) {
-      showHorizontalCenterLine();
+      showHorizontalCenterLine()
     }
-  });
+  })
 
-  canvas.on('mouse:up', function() {
+  canvas.on("mouse:up", function () {
     // clear these values, to stop drawing guidelines once mouse is up
-    isInVerticalCenter = isInHorizontalCenter = null;
-    canvas.renderAll();
-  });
+    isInVerticalCenter = isInHorizontalCenter = null
+    canvas.renderAll()
+  })
 }
 function initAligningGuidelines(canvas) {
   var ctx = canvas.getSelectionContext(),
@@ -376,28 +404,29 @@ const compareTwoFabricObject = (
   return obj1 === obj2
 }
 export const useEditorStore = defineStore("editor", () => {
-  const canvas = ref<fabric.Canvas>()
+  let canvas: fabric.Canvas
+  const canvasRef = ref()
   const init = (canvasInstance: fabric.Canvas) => {
     initAligningGuidelines(canvasInstance)
     initCenteringGuidelines(canvasInstance)
-    canvas.value = canvasInstance
+    canvas = canvasInstance
     const controlStore = useControlStore()
   }
   const add = (element: fabric.Object) => {
-    canvas.value?.add(markRaw(element))
+    canvas.add(element)
   }
   const addEvent = () => {}
   const renderAll = () => {
-    canvas.value?.renderAll()
+    canvas?.renderAll()
   }
   const removeAllEvent = () => {
-    canvas.value?.off()
+    canvas?.off()
   }
   const addAllEvent = () => {
-    if (!canvas.value) {
+    if (!canvas) {
       return
     }
-    canvas.value.on("mouse:over", e => {
+    canvas.on("mouse:over", e => {
       const target = e.target
       target?.set({
         borderColor: "red",
@@ -407,20 +436,20 @@ export const useEditorStore = defineStore("editor", () => {
         cornerSize: 6,
         transparentCorners: true
       })
-      canvas.value?.requestRenderAll()
+      canvas?.requestRenderAll()
     })
-    canvas.value.on("mouse:out", e => {
+    canvas.on("mouse:out", e => {
       const target = e.target
-      if (compareTwoFabricObject(target, canvas.value?.getActiveObject())) {
+      if (compareTwoFabricObject(target, canvas?.getActiveObject())) {
         return
       }
       target?.set("stroke", "transparent")
-      canvas.value?.requestRenderAll()
+      canvas?.requestRenderAll()
     })
 
-    canvas.value.on("mouse:down", e => {
+    canvas.on("mouse:down", e => {
       const target = e.target
-      if (compareTwoFabricObject(target, canvas.value?.getActiveObject())) {
+      if (compareTwoFabricObject(target, canvas?.getActiveObject())) {
         target?.set({
           borderColor: "red",
           cornerColor: "green",
@@ -431,9 +460,9 @@ export const useEditorStore = defineStore("editor", () => {
         })
       }
     })
-    canvas.value.on("mouse:up", e => {
+    canvas.on("mouse:up", e => {
       const target = e.target
-      if (compareTwoFabricObject(target, canvas.value?.getActiveObject())) {
+      if (compareTwoFabricObject(target, canvas?.getActiveObject())) {
         target?.set({
           borderColor: "red",
           cornerColor: "green",
@@ -444,38 +473,69 @@ export const useEditorStore = defineStore("editor", () => {
         })
       }
     })
-    canvas.value.on("object:moving", e => {
+    canvas.on("object:moving", e => {
       e.target?.set({
-        // cornerColor: 'transparent'
-        hasBorders: true
+        hasBorders: true,
+        hasControls: false
       })
     })
-    // canvas.value.on('drop', e => {
+    // canvas.on('drop', e => {
     //   console.log(e);
     // })
   }
 
   const dragAddItem = (event: DragEvent, item: fabric.Object) => {
-    const { left, top} = canvas.value!.getSelectionElement().getBoundingClientRect()
+    const { left, top } = canvas.getSelectionElement().getBoundingClientRect()
     if (event.x < left || event.y < top || item.width === undefined) return
 
     const point = {
       x: event.x - left,
-      y: event.y - top,
+      y: event.y - top
     }
-    console.log(item.width);
-    
-    const pointerVpt = canvas.value!.restorePointerVpt(point)
+    const pointerVpt = canvas!.restorePointerVpt(point)
     item.left = pointerVpt.x - IMG_SCALE_WIDTH / 2
     item.top = pointerVpt.y
-    console.log(item);
-    
     add(item)
-    canvas.value!.setActiveObject(item)
-    canvas.value!.renderAll()
+    canvas!.setActiveObject(item)
+    canvas!.renderAll()
+  }
+
+  const saveCanvas = () => {
+    const json = canvas.toJSON()
+    console.log(json)
+    const localJson = useLocalStorage("canvas", json)
+    localJson.value = json
+  }
+  const loadJson = (data) => {
+    const json = useLocalStorage("canvas", "")
+    console.log(data)
+    // canvas?.clear()
+    canvas.loadFromJSON(JSON.stringify(data), () => {
+      const {height, width} = data
+      canvas.setHeight(data.height)
+      canvas.setWidth(data.width)
+      canvas.renderAll()
+    })
+  }
+
+  const render = (data) => {
+    const { objects, ...y} = data
+    const instance = new fabric.Canvas(canvasRef.value, {
+      ...y
+      // backgroundImage: 'http://i.imgur.com/8rmMZI3.jpg'
+    })
+    canvas = instance
+    canvas.loadFromJSON(data, () => {
+
+      canvas.renderAll()
+    })
   }
   return {
+    // @ts-ignore
     canvas,
+    canvasRef,
+    loadJson,
+    saveCanvas,
     renderAll,
     dragAddItem,
     removeAllEvent,
@@ -484,7 +544,3 @@ export const useEditorStore = defineStore("editor", () => {
     init
   }
 })
-
-const onDragStart = () => {
-
-}

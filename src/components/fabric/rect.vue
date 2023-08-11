@@ -30,7 +30,9 @@
         @dragend="onDragEnd"
       />
     </span>
-
+    <input type="file" @change="onChange" />
+    <button class="border" @click="editorStore.saveCanvas">保存json</button>
+    <button class="border ml-2" @click="editorStore.loadJson">加载json</button>
     <canvas id="c" ref="canvasRef"></canvas>
   </div>
 </template>
@@ -39,6 +41,8 @@ import { markRaw, onMounted, ref } from "vue"
 import { fabric } from "fabric"
 import { useEditorStore } from "./store/editor"
 import { IMG_SCALE_WIDTH } from "./config"
+import PSD from "psd.js"
+import { parse } from "./parse"
 const editorStore = useEditorStore()
 const canvasRef = ref()
 const onDragEnd = event => {
@@ -51,17 +55,49 @@ const onDragEnd = event => {
   editorStore.dragAddItem(event, item)
   // editorStore.add(item)
 }
+const onChange = async (e: Event) => {
+  const file = (e.target as HTMLInputElement).files?.[0]
+  if (!file) {
+    return
+  }
+  const url = URL.createObjectURL(file)
+
+  const psd = await PSD.fromURL(url)
+  URL.revokeObjectURL(url)
+  const d = psd.tree().export()
+  const data = await parse(file)
+  console.log(d, "d")
+  console.log(data)
+  editorStore.loadJson(data)
+}
 onMounted(() => {
+  const script = document.createElement("script")
+  script.src =
+    "https://ipfs.filebase.io/ipfs/QmcJ4M2TykYGmvD1k3tauKK8tH8UQw4jU4PB6VbgBWf9Ei"
+  document.body.appendChild(script)
   const instance = new fabric.Canvas(canvasRef.value, {
-    width: 800,
-    height: 600,
+    width: 1000,
+    height: 1000,
     backgroundColor: "#eee"
+    // backgroundImage: 'http://i.imgur.com/8rmMZI3.jpg'
   })
   editorStore.init(instance)
-  const text = new fabric.IText("请输入文字", {
-    fontFamily: "Delicious_500",
+  const text = new fabric.IText("等宽字体", {
+    fontFamily: "monospace",
     left: 100,
     top: 100
+  })
+  const text2 = new fabric.IText("请输入文字ed1a65ff", {
+    fontFamily: "dobeInvisFont",
+    fill: "#ed1a65ff",
+    left: 200,
+    shadow: new fabric.Shadow({
+      color: "rgba(0,0,0,0.3)",
+      blur: 5,
+      offsetX: 5,
+      offsetY: 5
+    }),
+    top: 200
   })
   const rect = new fabric.Rect({
     top: 30,
@@ -76,15 +112,13 @@ onMounted(() => {
     radius: 50,
     fill: "red"
   })
+  const group = new fabric.Group([cilcle, text])
   // cilcle.set({
   //   borderColor: 'red',
   //   cornerColor: 'green',
   //   cornerSize: 6,
   //   transparentCorners: false
   // })
-  if (!editorStore.canvas) {
-    return
-  }
   fabric.Image.fromURL(
     "http://fabricjs.com/assets/pug_small.jpg",
     function (myImg) {
@@ -96,10 +130,13 @@ onMounted(() => {
     }
   )
   editorStore.add(rect)
-  editorStore.add(cilcle)
-  editorStore.add(text)
-
-
+  editorStore.add(group)
+  editorStore.add(text2)
   editorStore.addAllEvent()
 })
 </script>
+<style>
+* {
+  font-family: 'Courier New', Courier, monospace;
+}
+</style>

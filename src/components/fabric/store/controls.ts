@@ -152,24 +152,10 @@ export const useControlStore = defineStore("control", () => {
     }
   })
   editorStore.canvas.on("mouse:down", (e) => {
-
     if(e.transform?.corner == 'mtr') {
       setActiveObjVisible(false)
       editorStore.canvas?.renderAll();
     }
   })
-  editorStore.canvas.on("mouse:up", () => {
-    setActiveObjVisible(true)
-  })
 
-  editorStore.canvas.on("object:moving", (e) => {
-    // setActiveObjVisible(false)
-    e.target?.set({
-      hasControls: false,
-      hasBorders: false
-    })
-  })
-  // editorStore.canvas.on("after:render", () => {
-  //   console.log(1);
-  // })
 })
