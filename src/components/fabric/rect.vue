@@ -30,7 +30,7 @@
         @dragend="onDragEnd"
       />
     </span>
-    <input type="file" @change="onChange" />
+    <input type="file" @change="onChange" ref="inputRef"/>
     <button class="border" @click="editorStore.saveCanvas">保存json</button>
     <button class="border ml-2" @click="() => editorStore.loadJson()">加载json</button>
     <canvas id="c" ref="canvasRef"></canvas>
@@ -45,6 +45,7 @@ import PSD from "psd.js"
 import { parse } from "./parse"
 const editorStore = useEditorStore()
 const canvasRef = ref()
+const inputRef = ref()
 const onDragEnd = event => {
   const img = event.target
 
@@ -69,6 +70,7 @@ const onChange = async (e: Event) => {
   console.log(d, "d")
   console.log(data)
   editorStore.loadJson(data)
+  inputRef.value.value = ""
 }
 onMounted(() => {
   const script = document.createElement("script")

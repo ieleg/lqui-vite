@@ -343,7 +343,7 @@ const parseText = (data, layer) => {
     height: data.height,
     top: data.top,
     left: data.left,
-    text: data.text.value,
+    text: data.text.value.replace(/\r/g, "\n"),
     opacity: data.opacity,
     textAlign: data.text.font.alignment[0],
     // fontFamily: typeTool
