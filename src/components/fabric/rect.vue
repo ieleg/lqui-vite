@@ -32,7 +32,7 @@
     </span>
     <input type="file" @change="onChange" />
     <button class="border" @click="editorStore.saveCanvas">保存json</button>
-    <button class="border ml-2" @click="editorStore.loadJson">加载json</button>
+    <button class="border ml-2" @click="() => editorStore.loadJson()">加载json</button>
     <canvas id="c" ref="canvasRef"></canvas>
   </div>
 </template>
@@ -82,10 +82,34 @@ onMounted(() => {
     // backgroundImage: 'http://i.imgur.com/8rmMZI3.jpg'
   })
   editorStore.init(instance)
-  const text = new fabric.IText("等宽字体", {
+  const text = new fabric.IText("等宽字体的渐变测试", {
     fontFamily: "monospace",
     left: 100,
-    top: 100
+    top: 100,
+    fill: {
+      offsetX: 0,
+      offsetY: 0,
+      type: "linear",
+      gradientUnits: "pixels",
+      coords: {
+        x1: 0,
+        y1: 0,
+        x2: 100,
+        y2: 100
+      },
+      
+      colorStops: [
+        {
+          offset: 0,
+          color: "red"
+        },
+        {
+          offset: 1,
+          color: "blue"
+        }
+      ]
+    }
+
   })
   const text2 = new fabric.IText("请输入文字ed1a65ff", {
     fontFamily: "dobeInvisFont",
@@ -98,6 +122,24 @@ onMounted(() => {
       offsetY: 5
     }),
     top: 200
+  })
+  const text3 = new fabric.IText("多字号测试", {
+    fill: "#ed1a65ff",
+    left: 500,
+    shadow: new fabric.Shadow({
+      color: "rgba(0,0,0,0.3)",
+      blur: 5,
+      offsetX: 5,
+      offsetY: 5
+    }),
+    top: 300,
+    styles: {
+    0: {
+      0: { fontSize: 16},
+      1: { fontSize: 20},
+      3: { fontSize: 50},
+    },
+  }
   })
   const rect = new fabric.Rect({
     top: 30,
@@ -132,6 +174,7 @@ onMounted(() => {
   editorStore.add(rect)
   editorStore.add(group)
   editorStore.add(text2)
+  editorStore.add(text3)
   editorStore.addAllEvent()
 })
 </script>

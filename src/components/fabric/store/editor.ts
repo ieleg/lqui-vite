@@ -506,17 +506,20 @@ export const useEditorStore = defineStore("editor", () => {
     const localJson = useLocalStorage("canvas", json)
     localJson.value = json
   }
-  const loadJson = (data) => {
-    const json = useLocalStorage("canvas", "")
-    console.log(data)
+  const loadJson = (data?: any) => {
+    const localJson = useLocalStorage("canvas", '')
+    console.log(data, localJson.value)
     // canvas?.clear()
-    canvas.loadFromJSON(JSON.stringify(data), () => {
-      const {height, width} = data
-      canvas.setHeight(data.height)
-      canvas.setWidth(data.width)
-      if(data.width > 1000) {
-        canvas.setZoom(1000 / data.width)
+    canvas.loadFromJSON(JSON.stringify(data) ?? localJson.value, () => {
+      if(data) {
+        const {height, width} = data
+        canvas.setHeight(data.height)
+        canvas.setWidth(data.width)
+        if(data.width > 1000) {
+          canvas.setZoom(1000 / data.width)
+        }
       }
+
       canvas.renderAll()
     })
   }

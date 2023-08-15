@@ -126,8 +126,6 @@ const findLayer = (data: any, psd: any) => {
 }
 // 解析psd文件到fb格式
 const parsePSD2FB = async psd => {
-  console.log(psd, "psd")
-
   const { children, document: doc } = psd.tree().export()
 
   const [bgData] = children.slice(-1)
@@ -140,8 +138,6 @@ const parsePSD2FB = async psd => {
   }
   if (["Background", "background", "背景"].includes(bgData.name)) {
     const layer = findLayer(bgData, psd)
-    console.log(bgData, layer, "background")
-
     const image = parseImage(bgData, layer)
     fb.backgroundImage = image.src
 
@@ -155,8 +151,6 @@ const parsePSD2FB = async psd => {
       }
 
       const layer = findLayer(item, psd)
-      console.log(layer);
-
       if (!layer) return
 
       const cloud = layer.typeTool
@@ -273,8 +267,6 @@ const parsePSD2FB = async psd => {
   //   return fb
   // }
   // fb.objects = process(children)
-  console.log(fb)
-
   return fb
 }
 
@@ -300,10 +292,12 @@ const parseText = (data, layer) => {
 
   const strokes = []
   const shadows = []
+  const gradients = []
+  // console.log(layer,data.name, "字体效果");
+
   if (objectEffects) {
-    console.log(objectEffects, "objectEffects");
     
-    const { FrFX, DrSh } = objectEffects.data
+    const { FrFX, DrSh, GrFl } = objectEffects.data
 
     if (FrFX) {
       strokes.push({
@@ -331,10 +325,18 @@ const parseText = (data, layer) => {
         angle: DrSh.lagl.value
       })
     }
+
+    if(GrFl) {
+
+    }
   }
 
   const { angle } = calcTransform(typeTool.transform)
 
+  const tranY = layer.node.export().text.transform.yy
+  const tranX = layer.node.export().text.transform.yx
+  const fontSize = Math.abs(angle) === 90 ? data.text.font.sizes[0] * tranX : data.text.font.sizes[0] * tranY
+  console.log(fontSize,angle, "tranY" , data.name, layer.node.export().text.transform);
   return {
     type: "i-text",
     width: data.width,
@@ -348,7 +350,7 @@ const parseText = (data, layer) => {
     //   .fonts()
     //   .map((font: string) => font.slice(1).replace('\u0000', '')),
     fontFamily: typeTool.fonts()[0].slice().replace("\u0000", ""),
-    fontSize: data.text.font.sizes[0],
+    fontSize,
     fill: RGBA2HexA(...toRGBAColor(data.text.font.colors[0])),
     textDecoration: StyleRun.RunArray[0].StyleSheet.StyleSheetData.Underline
       ? "underline"
@@ -358,7 +360,8 @@ const parseText = (data, layer) => {
     texts,
     strokes,
     shadow: parseShadow(shadows?.[0]),
-    angle
+    angle,
+    styles: []
   }
 }
 
@@ -371,7 +374,8 @@ const parseImage = (data: any, layer: any) => {
     height: data.height,
     top: data.top,
     left: data.left,
-    opacity: data.opacity
+    opacity: data.opacity,
+    styles: []
   }
 }
 
