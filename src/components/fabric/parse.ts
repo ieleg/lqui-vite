@@ -1,6 +1,9 @@
 // import PSD from "psd.js"
 import { RGBA2HexA, toRGBAColor, toRGBAColor1 } from "./color"
 import { psdText } from "./mock"
+import { readPsd } from 'ag-psd';
+import * as fs from 'fs';
+import * as path from 'path';
 interface PsdShadow {
   color: number[]
   distance: number
@@ -109,10 +112,20 @@ interface Psd {
 }
 
 const STROKE_TYPE = {
-  InsF: 'inner',
-  CtrF: 'center',
-  OutF: 'outer',
-};
+  InsF: "inner",
+  CtrF: "center",
+  OutF: "outer"
+}
+
+const fileToBuffer = (file: File) => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.onload = (e) => {
+      resolve(reader.result)
+    }
+    reader.readAsArrayBuffer(file)
+  })
+}
 
 export const parse = async (file: File) => {
   const url = URL.createObjectURL(file)
@@ -156,7 +169,7 @@ const parsePSD2FB = async psd => {
       const cloud = layer.typeTool
         ? parseText(item, layer)
         : parseImage(item, layer)
-        fb.objects.unshift(cloud as never)
+      fb.objects.unshift(cloud as never)
     })
   }
   process(children)
@@ -290,53 +303,42 @@ const parseText = (data, layer) => {
     return props
   })
 
-  const strokes = []
-  const shadows = []
+  const stroke = {}
+  let shadow = {}
   const gradients = []
   // console.log(layer,data.name, "字体效果");
+  const { angle } = calcTransform(typeTool.transform)
 
   if (objectEffects) {
-    
     const { FrFX, DrSh, GrFl } = objectEffects.data
 
     if (FrFX) {
-      strokes.push({
-        type: Reflect.get(STROKE_TYPE, FrFX.Styl.value),
-        width: FrFX["Sz  "].value,
-        color: [
-          FrFX["Clr "]["Rd  "],
-          FrFX["Clr "]["Grn "],
-          FrFX["Clr "]["Bl  "],
-          FrFX.Opct.value / 100
-        ]
-      })
+      stroke.strokeWidth = FrFX["Sz  "].value
+      stroke.paintFirst = FrFX['Styl'].value === 'InsF' ? 'fill' : "stroke"
+      stroke.stroke = RGBA2HexA(
+        FrFX["Clr "]["Rd  "],
+        FrFX["Clr "]["Grn "],
+        FrFX["Clr "]["Bl  "],
+        FrFX.Opct.value / 100
+      )
     }
 
     if (DrSh) {
-      shadows.push({
-        color: [
-          DrSh["Clr "]["Rd  "],
-          DrSh["Clr "]["Grn "],
-          DrSh["Clr "]["Bl  "],
-          DrSh.Opct.value / 100
-        ],
-        distance: DrSh.Dstn.value,
-        blur: DrSh.blur.value,
-        angle: DrSh.lagl.value
-      })
+      shadow = parseShadow(DrSh)
     }
 
-    if(GrFl) {
-
+    if (GrFl) {
+      gradients.push(parseGradient(GrFl, angle, data.height, data.width))
     }
   }
 
-  const { angle } = calcTransform(typeTool.transform)
-
   const tranY = layer.node.export().text.transform.yy
   const tranX = layer.node.export().text.transform.yx
-  const fontSize = Math.abs(angle) === 90 ? data.text.font.sizes[0] * tranX : data.text.font.sizes[0] * tranY
-  console.log(fontSize,angle, "tranY" , data.name, layer.node.export().text.transform);
+  const fontSize =
+    Math.abs(angle) === 90
+      ? data.text.font.sizes[0] * tranX
+      : data.text.font.sizes[0] * tranY
+  console.log("tranY", data.name, objectEffects)
   return {
     type: "i-text",
     width: data.width,
@@ -351,17 +353,20 @@ const parseText = (data, layer) => {
     //   .map((font: string) => font.slice(1).replace('\u0000', '')),
     fontFamily: typeTool.fonts()[0].slice().replace("\u0000", ""),
     fontSize,
-    fill: RGBA2HexA(...toRGBAColor(data.text.font.colors[0])),
+    fill: gradients.length
+      ? gradients[0]
+      : RGBA2HexA(...toRGBAColor(data.text.font.colors[0])),
     textDecoration: StyleRun.RunArray[0].StyleSheet.StyleSheetData.Underline
       ? "underline"
       : "",
     fontWeight: "",
     fontStyle: "",
     texts,
-    strokes,
-    shadow: parseShadow(shadows?.[0]),
+    ...stroke,
+    shadow,
     angle,
-    styles: []
+    styles: [],
+    ...parseLeftTop(data.left, data.top, data.height, data.width, angle)
   }
 }
 
@@ -379,30 +384,30 @@ const parseImage = (data: any, layer: any) => {
   }
 }
 
-var isSupportFontFamily = function (f) {
+const isSupportFontFamily = function (f) {
   if (typeof f != "string") {
     return false
   }
-  var h = "Arial"
+  let h = "Arial"
   if (f.toLowerCase() == h.toLowerCase()) {
     return true
   }
-  var e = "a"
-  var d = 100
-  var a = 100,
+  let e = "a"
+  let d = 100
+  let a = 100,
     i = 100
-  var c = document.createElement("canvas")
-  var b = c.getContext("2d")
+  let c = document.createElement("canvas")
+  let b = c.getContext("2d")
   c.width = a
   c.height = i
   b.textAlign = "center"
   b.fillStyle = "black"
   b.textBaseline = "middle"
-  var g = function (j) {
+  let g = function (j) {
     b.clearRect(0, 0, a, i)
     b.font = d + "px " + j + ", " + h
     b.fillText(e, a / 2, i / 2)
-    var k = b.getImageData(0, 0, a, i).data
+    let k = b.getImageData(0, 0, a, i).data
     return [].slice.call(k).filter(function (l) {
       return l != 0
     })
@@ -424,28 +429,106 @@ function calcTransform({ xx, xy }: { xx: number; xy: number }): {
   return { scale, angle }
 }
 
-[
+;[
   {
-      "color": [
-          0,
-          0,
-          0,
-          0.35
-      ],
-      "distance": 3,
-      "blur": 7,
-      "angle": 90
+    color: [0, 0, 0, 0.35],
+    distance: 3,
+    blur: 7,
+    angle: 90
   }
 ]
 // 将psd的投影转换为fabric的shadow
-const parseShadow = (data: PsdShadow) => {
-  if(!data) {
-    return null
-  }
+const parseShadow = DrSh => {
+  const color = RGBA2HexA(
+    DrSh["Clr "]["Rd  "],
+    DrSh["Clr "]["Grn "],
+    DrSh["Clr "]["Bl  "],
+    DrSh.Opct.value / 100
+  )
+  const blur = DrSh.blur.value
+
   return {
-    color: RGBA2HexA(...toRGBAColor(data.color)),
-    distance: data.distance,
-    blur: data.blur,
-    angle: data.angle
+    blur,color,
+    ...getOffestByAngle(DrSh.lagl.value, DrSh.Dstn.value),
   }
 }
+
+const getOffestByAngle = (angle: number, distance: number) => {
+  const offsetX = Math.cos(angle) * distance
+  const offsetY = Math.sin(angle) * distance
+  return { offsetX, offsetY }
+}
+
+const parseLeftTop = (
+  left: number,
+  top: number,
+  height: number,
+  width: number,
+  angel: number
+) => {
+  if (Math.abs(angel) === 90) {
+    return {
+      left,
+      top: top + height
+    }
+  }
+  return {
+    left,
+    top
+  }
+}
+
+// 将Grfl 转换为fabric的fill的Gradient类型
+const parseGradient = (
+  data: any,
+  angel: number,
+  height: number,
+  width: number
+) => {
+  const { Clrs, Trns, Angl, Type } = data.Grad
+  const colorStops = Clrs.map((item: any) => {
+    const Clr = item["Clr "]
+    const color = RGBA2HexA(
+      ...toRGBAColor([Clr["Rd  "], Clr["Grn "], Clr["Bl  "]])
+    )
+    const middlePoint = item.Mdpn / 100
+    return {
+      offset: item.Lctn / 4096,
+      color
+    }
+  })
+  const offsetX = data.Ofst.Hrzn.value / 100
+  const offsetY = data.Ofst.Vrtc.value / 100
+  console.log(parseCoords(angel, height, width))
+
+  return {
+    colorStops,
+    offsetX,
+    offsetY,
+    type: "linear",
+    coords: parseCoords(angel, height, width)
+  }
+}
+
+const parseCoords = (angel: number, height: number, width: number) => {
+  const cos = Math.cos((angel * Math.PI) / 180) * height
+  const sin = Math.sin((angel * Math.PI) / 180) * width
+  if (angel > 90) {
+    return {
+      x1: 0,
+      y1: 0,
+      x2: sin,
+      y2: cos
+    }
+  } else {
+    return {
+      x1: sin,
+      y1: cos,
+      x2: 0,
+      y2: 0
+    }
+  }
+}
+
+// 内外描边可以通过fill和stroke绘制顺序来实现
+const parseStroke = () => {}

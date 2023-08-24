@@ -1,4 +1,10 @@
-export const RGB2Hex = (r: number, g: number, b: number) => {
+interface Rgb {
+  r: number
+  g: number
+  b: number
+}
+export const RGB2Hex = (obj: Rgb) => {
+  const { r, g, b } = obj
   let _r = Math.round(r).toString(16)
   let _g = Math.round(g).toString(16)
   let _b = Math.round(b).toString(16)

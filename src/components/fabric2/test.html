@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://ipfs.filebase.io/ipfs/QmcJ4M2TykYGmvD1k3tauKK8tH8UQw4jU4PB6VbgBWf9Ei"></script>
+  <script src="https://unpkg.com/fabric@5.3.0/dist/fabric.min.js"></script>
+  <title>Document</title>
+  <style>
+
+  </style>
+</head>
+<body>
+  <input type="file" @input="onChange">
+  <canvas id="canvas"></canvas>
+</body>
+<script>
+
+  console.log(PSD, fabric);
+  const canvas = new fabric.Canvas('canvas')
+  const input = document.querySelector('input')
+  input.onchange = async (e) => {
+    const file = e.target.files[0]
+    const url = URL.createObjectURL(file)
+    const psd = await PSD.fromURL(url)
+    URL.revokeObjectURL(url)
+    const d = psd.tree().export()
+    console.log(d);
+  }
+</script>
+</html>
