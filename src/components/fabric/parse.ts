@@ -140,7 +140,6 @@ const findLayer = (data: any, psd: any) => {
 // 解析psd文件到fb格式
 const parsePSD2FB = async psd => {
   const { children, document: doc } = psd.tree().export()
-
   const [bgData] = children.slice(-1)
   const fb: FB = {
     backgroundColor: "#fff",
@@ -173,113 +172,6 @@ const parsePSD2FB = async psd => {
     })
   }
   process(children)
-  // const process = (psdTrees: PSD[]): FB[] => {
-  //   const fb: FB[] = []
-  //   for (let i = 0; i < psdTrees.length; i++) {
-  //     const item = psdTrees[i]
-  //     console.log(item)
-
-  //     if (item.type === "group" && Array.isArray(item.children)) {
-  //       const { children, ...y } = item
-  //       fb.push({
-  //         objects: [
-  //           {
-  //             type: "i-text",
-  //             width: 38,
-  //             height: 19,
-  //             originX: "left",
-  //             originY: "top",
-  //             top: 0,
-  //             left: 0,
-  //             text: "123",
-  //             opacity: 1,
-  //             textAlign: "center",
-  //             fontFamily: "dobeInvisFont",
-  //             fontSize: 25,
-  //             fill: "#ed1a65ff",
-  //             textDecoration: "",
-  //             fontWeight: "",
-  //             fontStyle: "",
-  //             texts: [
-  //               {
-  //                 text: "1",
-  //                 fontSize: 25,
-  //                 color: "#651aedff"
-  //               },
-  //               {
-  //                 text: "23",
-  //                 fontSize: 25,
-  //                 color: "#651aedff"
-  //               }
-  //             ],
-  //             strokes: [],
-  //             shadows: [],
-  //             angle: 0
-  //           },
-  //           {
-  //             type: "i-text",
-  //             originX: "left",
-  //             originY: "top",
-  //             width: 77,
-  //             height: 50,
-  //             top: 162,
-  //             left: 48,
-  //             text: "nihao\r\twoshi",
-  //             opacity: 1,
-  //             textAlign: "center",
-  //             fontFamily: "dobeInvisFont",
-  //             fontSize: 25,
-  //             fill: "#ed1a65ff",
-  //             textDecoration: "",
-  //             fontWeight: "",
-  //             fontStyle: "",
-  //             texts: [
-  //               {
-  //                 text: "n",
-  //                 fontSize: 25,
-  //                 color: "#651aedff"
-  //               },
-  //               {
-  //                 text: "ihao\r\twoshi",
-  //                 fontSize: 25,
-  //                 color: "#651aedff"
-  //               }
-  //             ],
-  //             strokes: [],
-  //             shadows: [],
-  //             angle: 0
-  //           }
-  //         ],
-  //         type: "group",
-  //         visible: true,
-  //         originX: "left",
-  //         originY: "top",
-  //         opacity: 1,
-  //         blendingMode: "normal",
-  //         name: "组 1",
-  //         left: 48,
-  //         right: 304,
-  //         top: 162,
-  //         bottom: 243,
-  //         height: 81,
-  //         width: 256
-  //       })
-  //       console.log(fb, "fb")
-  //     } else {
-  //       const layer = findLayer(item, psd)
-
-  //       const data = layer.typeTool
-  //         ? parseText(item, layer)
-  //         : parseImage(item, layer)
-  //       const fbData: FBData = {
-  //         ...data
-  //       }
-  //       fb.push(fbData)
-  //     }
-  //   }
-  //   return fb
-  // }
-  // fb.objects = process(children)
   return fb
 }
 

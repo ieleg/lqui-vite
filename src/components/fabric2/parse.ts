@@ -41,9 +41,6 @@ export const parse = async (file: File) => {
   const buffer = await fileToBuffer(file)
   const res = await readPsd(buffer)
   document.body.appendChild(res.canvas);
-  console.log(buffer, JSON.stringify(res.canvas), 'buffer');
-
-  console.log(res, 'buffer');
   const fb = parsePSD2FB(res)
   return fb
 }
@@ -51,6 +48,8 @@ export const parse = async (file: File) => {
 const parsePSD2FB = async (psd: Psd) => {
   const { height, width} = psd
   const children = psd.children?.reverse() ?? []
+  console.log(children, 'psd');
+  
   const [bgData] = children.slice(-1)
   const fb: FB = {
     backgroundColor: "#fff",
@@ -86,11 +85,9 @@ const parseText = (data: Layer) => {
   const { effects,canvas, left, top } = data
   const {transform, style,text,...y} = data.text as LayerTextData
   let angle = getAngelByCanvasTransform(transform!)
-  console.log(style.fillColor, data);
   const obj: any = {
 
   }
-  console.log( data,data.name, transform, y.left,y.top, 'stroke');
 
   if(effects?.stroke && effects.stroke[0].enabled) {
     
@@ -129,9 +126,11 @@ const parseImage = (data: Layer) => {
   const canvas = data.canvas || data.mask?.canvas
   const width = canvas.width
   const height = canvas.height
+  const {left, top, imageData } = data
   return {
     src: canvas.toDataURL(),
     type: "image",
+    left, top,
     width,
     height
 

@@ -1,4 +1,6 @@
 <template>
+  <div>
+
   <div calss="mainBox">
     <span class="flex gap-1 items-start">
       <img
@@ -51,6 +53,11 @@
     </button>
     <canvas id="c" ref="canvasRef"></canvas>
   </div>
+  <div>
+    图层
+  </div>
+</div>
+
 </template>
 <script lang="ts" setup>
 import { markRaw, onMounted, ref } from "vue"
