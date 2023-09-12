@@ -536,10 +536,18 @@ export const useEditorStore = defineStore("editor", () => {
       canvas.renderAll()
     })
   }
+
+
+  const finefindByClipName = (name) => {
+    const objects = canvas.getObjects()
+    const target = objects.find(item => item.clipFor === name)
+    return target
+  }
   return {
     // @ts-ignore
     canvas,
     canvasRef,
+    finefindByClipName,
     loadJson,
     saveCanvas,
     renderAll,

@@ -1,32 +1,52 @@
 <!DOCTYPE html>
-<html lang="zh">
-<head>
-  <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <script src="https://ipfs.filebase.io/ipfs/QmcJ4M2TykYGmvD1k3tauKK8tH8UQw4jU4PB6VbgBWf9Ei"></script>
-  <script src="https://unpkg.com/fabric@5.3.0/dist/fabric.min.js"></script>
-  <title>Document</title>
-  <style>
+<html>
+  <head>
+    <title>Canvas Text Multiple Shadows</title>
+  </head>
+  <body>
+    <canvas id="canvas" width="1000" height="1000"></canvas>
+    <script>
+      const canvas = document.getElementById("canvas")
+      const ctx = canvas.getContext("2d")
 
-  </style>
-</head>
-<body>
-  <input type="file" @input="onChange">
-  <canvas id="canvas"></canvas>
-</body>
-<script>
+      // 文本内容
+      const text = "Multiple Shadows"
 
-  console.log(PSD, fabric);
-  const canvas = new fabric.Canvas('canvas')
-  const input = document.querySelector('input')
-  input.onchange = async (e) => {
-    const file = e.target.files[0]
-    const url = URL.createObjectURL(file)
-    const psd = await PSD.fromURL(url)
-    URL.revokeObjectURL(url)
-    const d = psd.tree().export()
-    console.log(d);
-  }
-</script>
+      // 文本样式
+      ctx.font = "30px yaei"
+      ctx.textBaseline = "middle"
+      ctx.fillStyle = "red"
+
+      // 投影颜色和偏移
+      const shadowColors = ["purple", "green", "blue"]
+      const shadowOffsets = [
+        { x: 12, y: 12 },
+        { x: 4, y: -14 },
+        { x: -26, y: 26 }
+      ]
+      const color = "rgba(0,0,0,1)"
+
+      // // 绘制多个文本投影层
+      // for (let i = 0; i < shadowColors.length; i++) {
+      //   ctx.shadowColor = shadowColors[i]
+      //   ctx.shadowBlur = 3 // 阴影模糊度
+      //   ctx.shadowOffsetX = shadowOffsets[i].x
+      //   ctx.shadowOffsetY = shadowOffsets[i].y
+      //   ctx.fillStyle = color
+      //   // 绘制文本
+      //   ctx.fillText(text, 200, 100)
+      // }
+
+      for (let i = 0; i < shadowColors.length; i++) {
+        ctx.strokeStyle = shadowColors[i]
+        ctx.lineWidth = i +1
+        console.log(shadowColors[i], i + 2)
+        ctx.filter = "blur(4px)"
+        ctx.strokeText(text, 200, 100)
+      }
+      ctx.filter = "blur(4px)"
+      ctx.fillText(text, 200, 100)
+
+    </script>
+  </body>
 </html>

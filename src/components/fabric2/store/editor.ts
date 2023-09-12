@@ -5,6 +5,20 @@ import { useControlStore } from "./controls"
 import { IMG_SCALE_WIDTH } from "../config"
 import { useLocalStorage } from "@vueuse/core"
 import { str } from "../mock"
+// fabric.NamedImage = fabric.util.createClass(fabric.Image, {
+
+//   type: 'named-image',
+
+//   initialize: function(element, options) {
+//     this.callSuper('initialize', element, options);
+//     options && this.set('name', options.name);
+//   },
+
+//   toObject: function() {
+//     return fabric.util.object.extend(this.callSuper('toObject'), { name: this.name });
+//   }
+// });
+
 function initCenteringGuidelines(canvas) {
   var canvasWidth = canvas.getWidth(),
     canvasHeight = canvas.getHeight(),
@@ -501,7 +515,8 @@ export const useEditorStore = defineStore("editor", () => {
   }
 
   const saveCanvas = () => {
-    const json = canvas.toJSON()
+    // 自定义属性
+    const json = canvas.toJSON(['clipping', 'strokes', 'shadows'])
     console.log(json)
     const localJson = useLocalStorage("canvas", json)
     localJson.value = json
